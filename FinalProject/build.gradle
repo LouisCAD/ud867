@@ -12,6 +12,10 @@ buildscript {
     }
 }
 
+ext {
+    appEngineVersion = "1.9.48"
+}
+
 allprojects {
     repositories {
         jcenter()
