@@ -11,7 +11,7 @@ import xyz.louiscad.jokes.Jokes;
 import xyz.louiscad.jokesdisplayer.JokesDisplayActivity;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements JokeLoaderFragment.OnJokeLoadedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void tellJoke(View view) {
         String jokeText = Jokes.KANGAROO_JUMP;
+        Intent intent = new Intent(this, JokesDisplayActivity.class)
+                .putExtra(JokesDisplayActivity.EXTRA_JOKE, jokeText)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onJokeLoaded(String jokeText) {
         Intent intent = new Intent(this, JokesDisplayActivity.class)
                 .putExtra(JokesDisplayActivity.EXTRA_JOKE, jokeText)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

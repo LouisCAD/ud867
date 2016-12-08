@@ -1,5 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,14 +10,25 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+
+import java.io.IOException;
+
+import xyz.louiscad.example.jokes.backend.myApi.MyApi;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements View.OnClickListener {
+
+    private JokeLoaderFragment.OnJokeLoadedListener mListener;
 
     public MainActivityFragment() {
+        setRetainInstance(true);
     }
 
     @Override
@@ -31,6 +44,58 @@ public class MainActivityFragment extends Fragment {
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mAdView.loadAd(adRequest);
+        root.findViewById(R.id.tellJokeButton).setOnClickListener(this);
         return root;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mListener = ((JokeLoaderFragment.OnJokeLoadedListener) context);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tellJokeButton:
+                new JokeFetchAsyncTask().execute();
+        }
+    }
+
+    private static MyApi sApiService = null;
+
+    private class JokeFetchAsyncTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            if (sApiService == null) {
+                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
+                        AndroidJsonFactory.getDefaultInstance(), null)
+                        .setRootUrl("http://192.168.42.220:8080/_ah/api/")
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> request) throws IOException {
+                                request.setDisableGZipContent(true);
+                            }
+                        });
+                sApiService = builder.build();
+            }
+            try {
+                return sApiService.sayHi("Louis").execute().getData();
+            } catch (IOException e) {
+                return e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String joke) {
+            mListener.onJokeLoaded(joke);
+        }
     }
 }

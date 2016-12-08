@@ -3,6 +3,7 @@ package xyz.louiscad.jokesdisplayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class JokesDisplayActivity extends AppCompatActivity {
@@ -19,5 +20,16 @@ public class JokesDisplayActivity extends AppCompatActivity {
         TextView contentTextView = (TextView) findViewById(R.id.contentText);
         String jokeText = getIntent().getStringExtra(EXTRA_JOKE);
         contentTextView.setText(jokeText);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
