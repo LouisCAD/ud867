@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import xyz.louiscad.jokes.Jokes;
 import xyz.louiscad.jokesdisplayer.JokesDisplayActivity;
 
 
-public class MainActivity extends AppCompatActivity implements JokeLoaderFragment.OnJokeLoadedListener {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.OnJokeLoadedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +38,6 @@ public class MainActivity extends AppCompatActivity implements JokeLoaderFragmen
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void tellJoke(View view) {
-        String jokeText = Jokes.KANGAROO_JUMP;
-        Intent intent = new Intent(this, JokesDisplayActivity.class)
-                .putExtra(JokesDisplayActivity.EXTRA_JOKE, jokeText)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
     }
 
     @Override

@@ -25,7 +25,7 @@ import xyz.louiscad.example.jokes.backend.myApi.MyApi;
  */
 public class MainActivityFragment extends Fragment implements View.OnClickListener {
 
-    private JokeLoaderFragment.OnJokeLoadedListener mListener;
+    private OnJokeLoadedListener mListener;
 
     public MainActivityFragment() {
         setRetainInstance(true);
@@ -51,7 +51,7 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = ((JokeLoaderFragment.OnJokeLoadedListener) context);
+        mListener = ((OnJokeLoadedListener) context);
     }
 
     @Override
@@ -70,6 +70,20 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 
     private static MyApi sApiService = null;
 
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnJokeLoadedListener {
+        void onJokeLoaded(String joke);
+    }
+
     private class JokeFetchAsyncTask extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -87,7 +101,7 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
                 sApiService = builder.build();
             }
             try {
-                return sApiService.sayHi("Louis").execute().getData();
+                return sApiService.randomJoke().execute().getBody();
             } catch (IOException e) {
                 return e.getMessage();
             }
