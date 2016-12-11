@@ -64,11 +64,14 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tellJokeButton:
-                new JokeFetchAsyncTask().execute();
+                new JokeFetchAsyncTask() {
+                    @Override
+                    protected void onPostExecute(String joke) {
+                        mListener.onJokeLoaded(joke);
+                    }
+                }.execute();
         }
     }
-
-    private static MyApi sApiService = null;
 
     /**
      * This interface must be implemented by activities that contain this
@@ -84,14 +87,18 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
         void onJokeLoaded(String joke);
     }
 
-    private class JokeFetchAsyncTask extends AsyncTask<Void, Void, String> {
+    public abstract static class JokeFetchAsyncTask extends AsyncTask<Void, Void, String> {
+
+        private static MyApi sApiService = null;
+        private static final String ROOT_URL_USB_HOTSPOT = "http://192.168.42.220:8080/_ah/api/";
+        private static final String ROOT_URL_HOME = "http://192.168.86.35:8080/_ah/api/";
 
         @Override
         protected String doInBackground(Void... params) {
             if (sApiService == null) {
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         AndroidJsonFactory.getDefaultInstance(), null)
-                        .setRootUrl("http://192.168.42.220:8080/_ah/api/")
+                        .setRootUrl(ROOT_URL_HOME)
                         .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                             @Override
                             public void initialize(AbstractGoogleClientRequest<?> request) throws IOException {
@@ -108,8 +115,6 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
         }
 
         @Override
-        protected void onPostExecute(String joke) {
-            mListener.onJokeLoaded(joke);
-        }
+        protected abstract void onPostExecute(String joke);
     }
 }
