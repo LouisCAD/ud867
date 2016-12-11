@@ -89,7 +89,7 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
             if (sApiService == null) {
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         AndroidJsonFactory.getDefaultInstance(), null)
-                        .setRootUrl(ROOT_URL_HOME)
+                        .setRootUrl(ROOT_URL_EMULATOR)
                         .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                             @Override
                             public void initialize(AbstractGoogleClientRequest<?> request) throws IOException {
